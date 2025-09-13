@@ -3,23 +3,45 @@ using UnityEngine;
 public class EmotionCharacterMover : MonoBehaviour
 {
     [Header("Movement Settings")]
-    public float moveSpeed = 2f;
+    public float minSpeed = 1f;
+    public float maxSpeed = 3f;
+    public bool stopMovement = false;
+
+    [Header("Rotation Settings")]
+    public float minRotationSpeed = 30f;
+    public float maxRotationSpeed = 90f;
+    public bool stopRotation = false;
 
     [Header("Boundary Settings")]
-    public Vector3 minBounds;
-    public Vector3 maxBounds;
-    private Vector3 moveDirection;
+    [ReadOnly] public Vector3 minBounds;
+    [ReadOnly] public Vector3 maxBounds;
+
+    [ReadOnly] private Vector3 moveDirection;
+    [ReadOnly] private float moveSpeed;
+
+    private Vector3 rotationAxis;
+    private float rotationSpeed;
 
     void Start()
     {
-        moveDirection = Random.onUnitSphere;
-        moveDirection.y = 0f;
-        moveDirection.Normalize();
+        moveDirection = Random.onUnitSphere.normalized;
+        moveSpeed = Random.Range(minSpeed, maxSpeed);
+
+        rotationAxis = Random.onUnitSphere.normalized;
+        rotationSpeed = Random.Range(minRotationSpeed, maxRotationSpeed);
     }
 
     void Update()
     {
-        transform.Translate(moveDirection * moveSpeed * Time.deltaTime, Space.World);
+        if (!stopMovement)
+        {
+            transform.Translate(moveDirection * moveSpeed * Time.deltaTime, Space.World);
+        }
+
+        if (!stopRotation)
+        {
+            transform.Rotate(rotationAxis, rotationSpeed * Time.deltaTime, Space.World);
+        }
 
         if (BoundaryManager.Instance == null)
             return;
@@ -28,9 +50,9 @@ public class EmotionCharacterMover : MonoBehaviour
         Vector3 min = BoundaryManager.Instance.minBounds;
         Vector3 max = BoundaryManager.Instance.maxBounds;
 
-        if (pos.x < min.x || pos.x > max.x ||
-            pos.y < min.y || pos.y > max.y ||
-            pos.z < min.z || pos.z > max.z)
+        if (pos.x < min.x - 1 || pos.x > max.x + 1 ||
+            pos.y < min.y - 1 || pos.y > max.y + 1 ||
+            pos.z < min.z - 1 || pos.z > max.z + 1)
         {
             Destroy(gameObject);
         }
