@@ -128,8 +128,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 138652616}
+  - component: {fileID: 138652619}
   - component: {fileID: 138652615}
   - component: {fileID: 138652614}
+  - component: {fileID: 138652618}
   m_Layer: 0
   m_Name: EmotionCharacterSpawner
   m_TagString: Untagged
@@ -150,10 +152,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   prefabList:
-  - {fileID: 8654747303126912969, guid: 887e83d024d5c0e4c99d6dc469543d4f, type: 3}
   - {fileID: 6885278578488318239, guid: 235c25a3fb511a842b3cb55817374391, type: 3}
   - {fileID: 1439440212764889644, guid: 4e465a26cbe76394aa10d182d4ebd7f3, type: 3}
   - {fileID: 6384314923983193335, guid: 0b2ecf9e099c2d741a826612bab78141, type: 3}
+  - {fileID: 8654747303126912969, guid: 887e83d024d5c0e4c99d6dc469543d4f, type: 3}
   - {fileID: 689367165333031093, guid: 003889bfc109a504aace73c57596395e, type: 3}
   spawnCount: 10
   prefabIndexToSpawn: 0
@@ -189,6 +191,40 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &138652618
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 138652613}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c91b308c07cbd4b4695aac433dc940bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  host: 127.0.0.1
+  port: 5500
+--- !u!114 &138652619
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 138652613}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80feef797919e6648bf506522d1a0c60, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minBounds: {x: 0, y: 0, z: 0}
+  maxBounds: {x: 0, y: 0, z: 0}
+  Joy: 0
+  Sadness: 0
+  Surprise: 0
+  Anger: 0
+  Calm: 0
+  DominantEmotion: 
 --- !u!1 &164716053
 GameObject:
   m_ObjectHideFlags: 0
@@ -440,7 +476,7 @@ GameObject:
   - component: {fileID: 536776157}
   - component: {fileID: 536776156}
   m_Layer: 5
-  m_Name: Panel
+  m_Name: BG_Panel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

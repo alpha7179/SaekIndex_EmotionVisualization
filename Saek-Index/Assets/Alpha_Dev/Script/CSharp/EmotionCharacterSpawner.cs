@@ -7,35 +7,62 @@ public class EmotionCharacterSpawner : MonoBehaviour
     public List<GameObject> prefabList;
     public int spawnCount = 10;
     [Tooltip("생성할 프리팹 인덱스 (0부터 시작)")]
-    public int prefabIndexToSpawn = 0;
+    [ReadOnly] public int prefabIndexToSpawn = 0;
 
     [Header("Spawn Position Range")]
     [ReadOnly] public Vector3 minPosition;
     [ReadOnly] public Vector3 maxPosition;
 
     private bool boundsInitialized = false;
+    private string lastDominantEmotion = null;
 
     void Update()
     {
-        // 경계값 초기화
         if (!boundsInitialized)
         {
-            if (BoundaryManager.Instance == null)
+            if (DataManager.Instance == null)
             {
-                Debug.LogError("BoundaryManager 인스턴스가 없습니다.");
+                Debug.LogError("DataManager 인스턴스가 없습니다.");
                 return;
             }
-            minPosition = BoundaryManager.Instance.minBounds;
-            maxPosition = BoundaryManager.Instance.maxBounds;
+            minPosition = DataManager.Instance.minBounds;
+            maxPosition = DataManager.Instance.maxBounds;
             boundsInitialized = true;
         }
 
-        if (Input.GetKeyDown(KeyCode.P))
+        if (DataManager.Instance != null)
         {
-            Debug.Log("P 키가 눌렸습니다.");
-            SpawnPrefabs();
+            string currentDominantEmotion = DataManager.Instance.DominantEmotion;
+
+            // dominantEmotion이 변경되었을 때만 처리
+            if (!string.IsNullOrEmpty(currentDominantEmotion) && currentDominantEmotion != lastDominantEmotion)
+            {
+                Debug.Log($"dominantEmotion 변경 감지됨: {currentDominantEmotion}");
+                lastDominantEmotion = currentDominantEmotion;
+                UpdatePrefabIndexByEmotion(currentDominantEmotion);
+                SpawnPrefabs();
+            }
         }
     }
+
+    // dominantEmotion에 맞는 프리팹 인덱스 찾기
+    private void UpdatePrefabIndexByEmotion(string emotion)
+    {
+        emotion = emotion.ToLower();
+
+        for (int i = 0; i < prefabList.Count; i++)
+        {
+            string prefabName = prefabList[i].name.ToLower();
+            if (prefabName.StartsWith(emotion))
+            {
+                prefabIndexToSpawn = i;
+                Debug.Log($"dominantEmotion '{emotion}' 로 시작하는 프리팹으로 변경: {prefabList[i].name}");
+                return;
+            }
+        }
+        Debug.LogWarning($"dominantEmotion '{emotion}' 로 시작하는 프리팹이 없어 기본 인덱스 유지: {prefabIndexToSpawn}");
+    }
+
 
     void SpawnPrefabs()
     {
@@ -60,7 +87,6 @@ public class EmotionCharacterSpawner : MonoBehaviour
                 Random.Range(minPosition.y, maxPosition.y),
                 Random.Range(minPosition.z, maxPosition.z)
             );
-
             GameObject spawnedObj = Instantiate(prefabToSpawn, randomPos, Quaternion.identity);
             Debug.Log($"객체가 생성되었습니다. 위치: {randomPos} / 객체 이름: {spawnedObj.name}");
         }
