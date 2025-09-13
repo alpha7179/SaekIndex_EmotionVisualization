@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 6386474440351334069}
   - component: {fileID: 5762412491115564120}
   - component: {fileID: 2036085754367639839}
+  - component: {fileID: -1056765185190798998}
   m_Layer: 0
   m_Name: Surprise
   m_TagString: Untagged
@@ -41,7 +42,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6384314923983193335}
-  m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!23 &5762412491115564120
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -108,3 +109,18 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &-1056765185190798998
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6384314923983193335}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e4856226c6e9e6548bc567bf11135d9a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveSpeed: 2
+  minBounds: {x: 0, y: 0, z: 0}
+  maxBounds: {x: 0, y: 0, z: 0}
