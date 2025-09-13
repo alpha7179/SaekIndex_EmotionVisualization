@@ -43,12 +43,12 @@ public class EmotionCharacterMover : MonoBehaviour
             transform.Rotate(rotationAxis, rotationSpeed * Time.deltaTime, Space.World);
         }
 
-        if (BoundaryManager.Instance == null)
+        if (DataManager.Instance == null)
             return;
 
         Vector3 pos = transform.position;
-        Vector3 min = BoundaryManager.Instance.minBounds;
-        Vector3 max = BoundaryManager.Instance.maxBounds;
+        Vector3 min = DataManager.Instance.minBounds;
+        Vector3 max = DataManager.Instance.maxBounds;
 
         if (pos.x < min.x - 1 || pos.x > max.x + 1 ||
             pos.y < min.y - 1 || pos.y > max.y + 1 ||
