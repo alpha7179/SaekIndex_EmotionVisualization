@@ -21,8 +21,8 @@ public class CalibrationData
 
     public void Tick(Quaternion newTarget, float speed)
     {
-        parent.rotation = newTarget;
-        parent.rotation = Quaternion.Lerp(parent.rotation, targetRotation, Time.deltaTime * speed);
+        // 현재 parent.rotation에서 newTarget으로 부드럽게 회전하도록 수정합니다.
+        parent.rotation = Quaternion.Lerp(parent.rotation, newTarget, Time.deltaTime * speed);
     }
 
     public Vector3 CurrentDirection => (tchild.position - tparent.position).normalized;

@@ -418,7 +418,7 @@ GameObject:
   - component: {fileID: 138652619}
   - component: {fileID: 138652615}
   - component: {fileID: 138652614}
-  - component: {fileID: 138652618}
+  - component: {fileID: 138652620}
   m_Layer: 0
   m_Name: EmotionCharacterSpawner
   m_TagString: Untagged
@@ -478,20 +478,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &138652618
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 138652613}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c91b308c07cbd4b4695aac433dc940bf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  host: 127.0.0.1
-  port: 5500
 --- !u!114 &138652619
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -512,6 +498,21 @@ MonoBehaviour:
   Anger: 0
   Calm: 0
   DominantEmotion: 
+--- !u!114 &138652620
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 138652613}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f59d0bbccfbeaef4cbd3db6288d419ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dataPath: Scripts/Emotion/Data
+  fileNamePattern: Emotion_Metadata
+  checkInterval: 1
 --- !u!1 &164716053
 GameObject:
   m_ObjectHideFlags: 0

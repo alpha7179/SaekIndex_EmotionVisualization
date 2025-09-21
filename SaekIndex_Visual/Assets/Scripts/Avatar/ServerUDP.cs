@@ -79,10 +79,9 @@ class ServerUDP
             catch (SocketException ex)
             {
                 print("Connection lost.");
-                System.Threading.Thread.Sleep(1000);
-
-                    StartListening();
-                break;
+                // 재귀 호출을 제거하여 스레드가 더 이상 작업을 시도하지 않고 종료되도록 합니다.
+                // StartListening(); // 이 줄을 삭제하거나 주석 처리하세요.
+                break; // break를 통해 while 루프를 탈출합니다.
             }
         }
     }

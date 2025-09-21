@@ -3,6 +3,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.IO;
 using UnityEngine;
+using System.Threading; // 스레드 사용을 위해 추가
 
 public class PythonSocketClient : MonoBehaviour
 {
@@ -48,10 +49,25 @@ public class PythonSocketClient : MonoBehaviour
 
             Debug.Log($"받은 데이터 - 파일명: {emotion.filename}, 시간: {emotion.time}, 절대경로: {emotion.fullpath}");
 
-            string jsonFilePath = emotion.fullpath;  // Python에서 전달된 절대경로 사용
+            string jsonFilePath = emotion.fullpath;
 
-            JsonReader reader = new JsonReader();
-            reader.ReadEmotionJson(jsonFilePath);
+            // 파일이 생성되고 완전히 쓰여질 때까지 기다립니다.
+            // 최대 5초까지 0.1초 간격으로 파일을 확인합니다.
+            float startTime = Time.time;
+            while (!File.Exists(jsonFilePath) && Time.time < startTime + 5f)
+            {
+                Thread.Sleep(100); // 100ms 대기
+            }
+
+            if (File.Exists(jsonFilePath))
+            {
+                JsonReader reader = new JsonReader();
+                reader.ReadEmotionJson(jsonFilePath);
+            }
+            else
+            {
+                Debug.LogError($"지정된 시간 내에 파일이 생성되지 않았습니다: {jsonFilePath}");
+            }
 
             // 추가 데이터 수신 대기
             stream.BeginRead(buffer, 0, buffer.Length, OnDataReceived, null);
@@ -71,8 +87,8 @@ public class PythonSocketClient : MonoBehaviour
     [Serializable]
     public class EmotionData
     {
-        public string filename;   // JSON 파일명
-        public string time;       // 생성 시간
-        public string fullpath;   // 절대 경로
+        public string filename;
+        public string time;
+        public string fullpath;
     }
 }
