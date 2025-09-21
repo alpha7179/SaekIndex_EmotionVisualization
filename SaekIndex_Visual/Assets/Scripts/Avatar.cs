@@ -34,7 +34,7 @@ public class Avatar : MonoBehaviour
             CalibrateFromPersistent();
         }
 
-        server = FindObjectOfType<PipeServer>();
+        server = FindAnyObjectByType<PipeServer>();
         if (server == null)
         {
             Debug.LogError("You must have a PipeServer in the scene!");
