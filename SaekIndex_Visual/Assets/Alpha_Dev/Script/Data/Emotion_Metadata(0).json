@@ -1,0 +1,8 @@
+{
+    "joy": 0.741,
+    "sadness": 0.979,
+    "surprise": 0.033,
+    "anger": 0.633,
+    "calm": 0.647,
+    "dominant_emotion": "sadness"
+}
