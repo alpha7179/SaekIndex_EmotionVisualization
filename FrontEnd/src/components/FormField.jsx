@@ -47,7 +47,9 @@ const InputField = ({ type, name, register, options, ...rest }) => {
       return (
         <Select id={name} {...register(name)} {...rest}>
           {options.map(option => (
-            <option key={option.value} value={option.value} disabled={option.disabled}></option>
+            <option key={option.value} value={option.value} disabled={option.disabled}>
+              {option.label}
+            </option>
           ))}
         </Select>
       );
