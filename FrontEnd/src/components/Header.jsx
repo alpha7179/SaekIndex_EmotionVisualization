@@ -2,40 +2,93 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import styled from '@emotion/styled';
-import { FaHome, FaList, FaFire, FaPlus } from 'react-icons/fa';
+import { useTranslation } from 'react-i18next'; // 1. useTranslation 훅 import
 
+// 헤더 전체를 감싸는 컨테이너
 const HeaderContainer = styled.header`
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 1rem;
+  width: 100%;
+  background: white;
+  padding: 1rem 2rem; /* 좌우 패딩 추가 */
+  border-bottom: 1px solid #f0f0f0; /* 아래에 얇은 구분선 추가 */
+  
+  /* 2. flex를 이용해 로고, 메뉴, 언어 선택 영역을 좌우로 배치 */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 `;
 
+// 좌측 로고
+const Logo = styled(Link)`
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #333d4b; /* 토스의 메인 텍스트 색상과 유사하게 */
+`;
+
+// 중앙 메뉴 영역
 const Nav = styled.nav`
   display: flex;
-  justify-content: space-around;
-  max-width: 600px;
-  margin: 0 auto;
+  gap: 2rem; /* 메뉴 사이 간격 */
 `;
 
+// 개별 메뉴 링크
 const NavLink = styled(Link)`
+  font-size: 1rem;
+  font-weight: 600;
+  color: #4e5968; /* 토스의 메뉴 텍스트 색상과 유사하게 */
+  padding: 0.5rem;
+  
+  /* 3. 활성(active) 상태일 때 텍스트 색상을 다르게 표시 */
+  &.active {
+    color: #3182f6; /* 토스의 포인트 색상 */
+  }
+
+  &:hover {
+    color: #3182f6;
+  }
+`;
+
+// 우측 언어 선택 영역
+const LangSwitcher = styled.div`
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
-  transition: background 0.3s;
-  
-  &:hover {
-    background: rgba(255, 255, 255, 0.2);
-  }
-  
-  &.active {
-    background: rgba(255, 255, 255, 0.3);
-  }
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #4e5968;
 `;
+
+const LangButton = styled.span`
+  cursor: pointer;
+  padding: 0.25rem;
+  color: ${props => props.active ? '#333d4b' : '#b0b8c1'}; /* 활성/비활성 색상 구분 */
+`;
+
+const Separator = styled.div`
+  width: 1px;
+  height: 12px;
+  background-color: #e5e8eb;
+`;
+
+const HeaderLogo = styled.strong`
+  font-family: 'ChangwonDanggamAsak', sans-serif; /* 적용할 폰트 지정 */
+  font-weight: normal; /* font-face에 정의된 weight 사용 */
+  font-size: 2rem; /* 폰트 크기 살짝 키우기 (선택 사항) */
+
+  background: linear-gradient(135deg, #b84182ff 0%, #F8EBE4 100%);
+  -webkit-background-clip: text; /* 웹킷 기반 브라우저 호환성 */
+  background-clip: text;
+  color: transparent;
+`;
+
+// --- Header 컴포넌트 ---
 
 function Header() {
   const location = useLocation();
+  const { t, i18n } = useTranslation(); // 2. t(번역 함수), i18n(언어 변경 인스턴스) 가져오기
+
+  const changeLanguage = (lang) => {
+    i18n.changeLanguage(lang);
+  };
 
   const isActive = (path) => {
     return location.pathname === path ? 'active' : '';
@@ -43,23 +96,31 @@ function Header() {
 
   return (
     <HeaderContainer>
-      <h1 style={{ textAlign: 'center', marginBottom: '1rem' }}>
-        Ajou Campus Foodmap
-      </h1>
+      <Logo to="/"><HeaderLogo>색인</HeaderLogo></Logo>
+
       <Nav>
+        {/* 3. 메뉴 텍스트를 t 함수로 감싸 번역 키를 사용하도록 변경 */}
         <NavLink to="/" className={isActive('/')}>
-          <FaHome /> Home
+          {t('menu.home')}
         </NavLink>
-        <NavLink to="/list" className={isActive('/list')}>
-          <FaList /> List
+        <NavLink to="/analyze" className={isActive('/analyze')}>
+          {t('menu.analyze')}
         </NavLink>
-        <NavLink to="/popular" className={isActive('/popular')}>
-          <FaFire /> Popular Top 3
-        </NavLink>
-        <NavLink to="/submit" className={isActive('/submit')}>
-          <FaPlus /> Submit New restaurant
+        <NavLink to="/visualization" className={isActive('/visualization')}>
+          {t('menu.visualization')}
         </NavLink>
       </Nav>
+
+      <LangSwitcher>
+        {/* 4. 버튼 클릭 시 언어 변경 함수 호출 및 현재 언어에 따라 active prop 전달 */}
+        <LangButton active={i18n.language === 'ko'} onClick={() => changeLanguage('ko')}>
+          KOR
+        </LangButton>
+        <Separator />
+        <LangButton active={i18n.language === 'en'} onClick={() => changeLanguage('en')}>
+          ENG
+        </LangButton>
+      </LangSwitcher>
     </HeaderContainer>
   );
 }

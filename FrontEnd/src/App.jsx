@@ -8,27 +8,18 @@ import './App.css';
 
 // Pages
 import HomePage from './pages/HomePage';
-import ListPage from './pages/ListPage';
-import DetailPage from './pages/DetailPage';
-import PopularPage from './pages/PopularPage';
-import SubmitPage from './pages/SubmitPage';
+import AnalyzePage from './pages/AnalyzePage';
+import VisualizationPage from './pages/VisualizationPage';
 
 // Components
 import Header from './components/Header';
+import Footer from './components/Footer'; 
 import NotFound from './components/NotFound';
 
 // Styles
 import GlobalStyles from './styles/GlobalStyles';
 
-// React Query Client 생성
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 1000 * 60 * 5, // 5분
-      retry: 1,
-    },
-  },
-});
+const queryClient = new QueryClient();
 
 function App() {
   return (
@@ -40,27 +31,16 @@ function App() {
           <main className="main-content">
             <Routes>
               <Route path="/" element={<HomePage />} />
-              <Route path="/list" element={<ListPage />} />
-              <Route path="/restaurant/:id" element={<DetailPage />} />
-              <Route path="/popular" element={<PopularPage />} />
-              <Route path="/submit" element={<SubmitPage />} />
+              <Route path="/analyze" element={<AnalyzePage />} />
+              <Route path="/visualization" element={<VisualizationPage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
-          <footer className="footer">
-            <p>© 2025 Ajou Campus Foodmap | Made with React</p>
-          </footer>
+          <Footer />
         </div>
-        <ToastContainer 
+        <ToastContainer
           position="bottom-right"
           autoClose={3000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
           theme="light"
         />
       </BrowserRouter>
