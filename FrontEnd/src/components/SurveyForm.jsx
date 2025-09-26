@@ -37,7 +37,29 @@ function SurveyForm() {
   const ageValue = watch('age');
 
   const onSubmit = async (data) => {
-    // ...
+    try {
+      // 1. 우리 서버(Netlify Function)의 주소로 데이터를 보냅니다.
+      // Netlify는 자동으로 /api/파일이름 과 같은 주소를 만들어줍니다.
+      const response = await fetch('/.netlify/functions/submit-survey', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data), // 2. 데이터를 JSON 문자열로 변환하여 보냅니다.
+      });
+
+      if (!response.ok) {
+        throw new Error('Server responded with an error');
+      }
+
+      const result = await response.json();
+      console.log('Success:', result);
+      toast.success('설문이 성공적으로 제출되었습니다!');
+
+    } catch (error) {
+      console.error('Error submitting survey:', error);
+      toast.error('제출 중 오류가 발생했습니다.');
+    }
   };
 
   return (
