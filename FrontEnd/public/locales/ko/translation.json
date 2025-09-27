@@ -7,9 +7,9 @@
   "home": {
     "title": "데이터 분석 및 시각화",
     "subtitle": "설문조사를 통해 데이터를 분석하고 결과를 확인하세요.",
-    "card_analyze_title": "설문조사 시작",
+    "card_analyze_title": "감정 분석 시작",
     "card_analyze_desc": "감정 분석을 시작합니다.",
-    "card_viz_title": "결과 보기",
+    "card_viz_title": "감정 시각화 확인",
     "card_viz_desc": "시각화 결과를 확인합니다."
   },
   "AnalyzePage": {
