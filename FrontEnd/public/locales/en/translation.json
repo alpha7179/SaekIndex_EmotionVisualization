@@ -17,7 +17,9 @@
     "subtitle": "Please process the emotions for Emotion analysis.",
     "survaystart": "Start analysis",
     "submit": "Submit a survey",
-    "submitload": "Submitting..."
+    "submitload": "Submitting...",
+    "success":"Survey submitted successfully!",
+    "error":"An error occurred during submission."
   },
   "VisualizationPage": {
     "title": "Emotion Visualization",
@@ -26,5 +28,10 @@
   "footer": {
     "menuname": "Project",
     "projectname": "Project"
+  },
+  "NotFound": {
+    "title": "404 - Page Not Found",
+    "message": "The requested page does not exist.",
+    "button": "Return to Home"
   }
 }

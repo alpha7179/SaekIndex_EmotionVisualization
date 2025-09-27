@@ -3,6 +3,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from '@emotion/styled';
 import { FaExclamationTriangle } from 'react-icons/fa';
+import { useTranslation } from 'react-i18next';
 
 const Container = styled.div`
   text-align: center;
@@ -27,24 +28,31 @@ const Message = styled.p`
 
 const HomeLink = styled(Link)`
   display: inline-block;
-  padding: 0.75rem 2rem;
-  background: #667eea;
-  color: white;
-  border-radius: 8px;
+
   transition: background 0.3s;
+
+  padding: 1rem 2.5rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: white;
+  background: linear-gradient(135deg, #b84182ff 0%, #ddc9bfff 100%);
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
   
   &:hover {
-    background: #5a67d8;
+    transform: scale(1.01);
   }
 `;
 
 function NotFound() {
+  const { t, i18n } = useTranslation(); 
   return (
     <Container>
       <Icon />
-      <Title>404 - 페이지를 찾을 수 없습니다</Title>
-      <Message>요청하신 페이지가 존재하지 않습니다.</Message>
-      <HomeLink to="/">홈으로 돌아가기</HomeLink>
+      <Title>{t('NotFound.title')}</Title>
+      <Message>{t('NotFound.message')}</Message>
+      <HomeLink to="/">{t('NotFound.button')}</HomeLink>
     </Container>
   );
 }

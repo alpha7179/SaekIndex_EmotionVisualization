@@ -56,7 +56,7 @@ function SurveyForm() {
 
       const result = await response.json();
       console.log('Success:', result);
-      toast.success('설문이 성공적으로 제출되었습니다!');
+      toast.success(t('AnalyzePage.success'));
 
       setTimeout(() => {
         navigate('/'); 
@@ -64,7 +64,7 @@ function SurveyForm() {
 
     } catch (error) {
       console.error('Error submitting survey:', error);
-      toast.error('제출 중 오류가 발생했습니다.');
+      toast.error(t('AnalyzePage.error'));
     }
   };
 
