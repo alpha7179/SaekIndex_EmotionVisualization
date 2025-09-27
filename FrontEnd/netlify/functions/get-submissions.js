@@ -19,7 +19,9 @@ exports.handler = async function(event) {
     });
 
     if (!response.ok) {
-      throw new Error('Failed to fetch submissions');
+      const errorBody = await response.text();
+      console.error('Netlify API responded with an error:', response.status, errorBody);
+      throw new Error(`Netlify API error: ${response.status}`);
     }
 
     const submissions = await response.json();
@@ -28,7 +30,9 @@ exports.handler = async function(event) {
       body: JSON.stringify(submissions),
     };
   } catch (error) {
+    console.error('--- FATAL ERROR ---', error);
     return {
+        
       statusCode: 500,
       body: JSON.stringify({ error: error.message }),
     };
