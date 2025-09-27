@@ -36,6 +36,11 @@ const OptionWrapper = styled.div`
   gap: 0.25rem;          /* 버튼과 텍스트 사이 간격 */
   flex: 1;               /* 각 선택지가 동일한 너비를 갖도록 함 */
 `;
+
+const RequiredMark = styled.span`
+  color: red;
+  margin-left: 0.25rem;
+`;
 // --- 여기까지 스타일 컴포넌트 ---
 
 
@@ -84,7 +89,7 @@ const InputField = ({ type, name, register, options, ...rest }) => {
 const FormField = ({ label, name, type, register, errors, options, validation, ...rest }) => {
   return (
     <FormGroup>
-      <Label htmlFor={name} type={type}>{label}</Label>
+      <Label htmlFor={name} type={type}>{label}{validation?.required && <RequiredMark>*</RequiredMark>}</Label>
       <InputField
         type={type}
         name={name}

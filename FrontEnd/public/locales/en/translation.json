@@ -15,6 +15,7 @@
   "AnalyzePage": {
     "title": "Emotion Analysis",
     "subtitle": "Please process the emotions for Emotion analysis.",
+    "survaystart": "Start analysis",
     "submit": "Submit a survey",
     "submitload": "Submitting..."
   },

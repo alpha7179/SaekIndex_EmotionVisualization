@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import styled from '@emotion/styled';
 import { FaPoll, FaChartBar } from 'react-icons/fa';
 import { useTranslation } from 'react-i18next';
+import GradientIcon from '../components/GradientIcon';
 import PageHeader from '../components/PageHeader'; // PageHeader import
 
 const HomeContainer = styled.div`
@@ -34,7 +35,6 @@ const Card = styled(Link)`
   svg {
     font-size: 3rem;
     margin-bottom: 1rem;
-    color: #667eea;
   }
 `;
 
@@ -52,12 +52,12 @@ function HomePage() {
         
         <CardGrid>
             <Card to="/analyze">
-            <FaPoll />
+            <div className="icon-container"><GradientIcon icon={FaPoll} id="poll-gradient" /></div>
             <h3>{t('home.card_analyze_title')}</h3>
             <p>{t('home.card_analyze_desc')}</p>
             </Card>
             <Card to="/visualization">
-            <FaChartBar />
+            <div className="icon-container"><GradientIcon icon={FaChartBar} id="chart-gradient" /></div>
             <h3>{t('home.card_viz_title')}</h3>
             <p>{t('home.card_viz_desc')}</p>
             </Card>

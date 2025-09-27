@@ -39,11 +39,11 @@ const NavLink = styled(Link)`
   
   /* 3. 활성(active) 상태일 때 텍스트 색상을 다르게 표시 */
   &.active {
-    color: #3182f6; /* 토스의 포인트 색상 */
+    color: #b84182ff; /* 토스의 포인트 색상 */
   }
 
   &:hover {
-    color: #3182f6;
+    color: #c777a3ff;
   }
 `;
 

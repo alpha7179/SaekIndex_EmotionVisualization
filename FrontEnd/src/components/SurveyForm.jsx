@@ -15,7 +15,7 @@ const FormContainer = styled.div`
   background: white; padding: 2rem; border-radius: 12px; max-width: 600px; margin: 0 auto;
 `;
 const SubmitButton = styled.button`
-  width: 100%; padding: 1rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: 600; cursor: pointer;
+  width: 100%; padding: 1rem; background: linear-gradient(135deg, #b84182ff 0%, #ddc9bfff 100%); color: white; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: 600; cursor: pointer;
 `;
 
 // 2. 언어별 설문 데이터를 담을 객체를 만듭니다.

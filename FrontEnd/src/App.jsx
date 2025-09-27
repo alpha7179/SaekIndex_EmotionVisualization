@@ -10,6 +10,7 @@ import './App.css';
 import HomePage from './pages/HomePage';
 import AnalyzePage from './pages/AnalyzePage';
 import VisualizationPage from './pages/VisualizationPage';
+import DataPage from './pages/DataPage';
 
 // Components
 import Header from './components/Header';
@@ -33,6 +34,7 @@ function App() {
               <Route path="/" element={<HomePage />} />
               <Route path="/analyze" element={<AnalyzePage />} />
               <Route path="/visualization" element={<VisualizationPage />} />
+              <Route path="/data" element={<DataPage />} /> 
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
