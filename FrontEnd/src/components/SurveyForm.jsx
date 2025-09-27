@@ -5,6 +5,7 @@ import styled from '@emotion/styled';
 import { toast } from 'react-toastify';
 import FormField from './FormField';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
 // 1. 두 언어의 설문 파일을 모두 import 합니다.
 import surveyKO from '../data/survey.ko.json';
@@ -25,6 +26,7 @@ const surveys = {
 
 function SurveyForm() {
   const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
   const today = new Date().toISOString().split('T')[0];
   
   // 3. 현재 언어(i18n.language)에 맞는 설문 데이터를 선택합니다. (기본값은 'ko')
@@ -55,6 +57,10 @@ function SurveyForm() {
       const result = await response.json();
       console.log('Success:', result);
       toast.success('설문이 성공적으로 제출되었습니다!');
+
+      setTimeout(() => {
+        navigate('/'); 
+      }, 1000); // 1000ms = 1초
 
     } catch (error) {
       console.error('Error submitting survey:', error);
