@@ -2,7 +2,6 @@
 import React from 'react';
 import styled from '@emotion/styled';
 
-// --- 스타일 컴포넌트 ---
 const FormGroup = styled.div`
   margin-bottom: 2.5rem; 
 `;
@@ -28,7 +27,6 @@ const ErrorMessage = styled.span`
   color: #ff4757; font-size: 0.875rem; margin-top: 0.25rem; display: block;
 `;
 
-// 👇 정렬의 핵심! 이 컴포넌트 스타일을 다시 확인해주세요.
 const OptionWrapper = styled.div`
   display: flex;
   flex-direction: column; /* 아이템(버튼, 텍스트)을 위아래 수직으로 쌓음 */
@@ -41,7 +39,6 @@ const RequiredMark = styled.span`
   color: red;
   margin-left: 0.25rem;
 `;
-// --- 여기까지 스타일 컴포넌트 ---
 
 
 const InputField = ({ type, name, register, options, ...rest }) => {

@@ -4,9 +4,6 @@ import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom';
 import styled from '@emotion/styled';
 
-// --- 스타일 컴포넌트 정의 ---
-
-// 푸터 전체를 감싸는 컨테이너
 const FooterContainer = styled.footer`
   background-color: #f9fafb; /* 매우 옅은 회색 배경 */
   color: #6b7280; /* 기본 텍스트 색상 */
@@ -15,13 +12,11 @@ const FooterContainer = styled.footer`
   border-top: 1px solid #f0f0f0;
 `;
 
-// 푸터 내용의 최대 너비를 제한하고 가운데 정렬하는 역할
 const FooterContent = styled.div`
   max-width: 1200px;
   margin: 0 auto;
 `;
 
-// 링크 컬럼들을 감싸는 wrapper
 const ColumnsWrapper = styled.div`
   display: flex;
   flex-wrap: wrap; /* 화면이 작아지면 줄바꿈 */
@@ -30,7 +25,6 @@ const ColumnsWrapper = styled.div`
   border-bottom: 1px solid #e5e8eb;
 `;
 
-// 각 링크 컬럼
 const Column = styled.div`
   flex: 1;
   min-width: 150px; /* 컬럼의 최소 너비 */
@@ -62,7 +56,6 @@ const LinkItem = styled.li`
   }
 `;
 
-// 하단 회사 정보 섹션
 const InfoSection = styled.div`
   padding-top: 2rem;
   font-size: 0.75rem;
@@ -74,8 +67,6 @@ const FooterLogo = styled.strong`
   font-weight: normal; /* font-face에 정의된 weight 사용 */
   font-size: 1.5rem; /* 폰트 크기 살짝 키우기 (선택 사항) */
 `;
-
-// --- Footer 컴포넌트 ---
 
 function Footer() {
     const location = useLocation();

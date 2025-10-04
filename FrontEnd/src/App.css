@@ -1,4 +1,6 @@
-/* 기본 스타일 초기화 */
+/* src/App.css */
+
+/* default style */
 * {
   margin: 0;
   padding: 0;
@@ -11,7 +13,7 @@ body {
   color: #333;
 }
 
-/* 레이아웃 */
+/* layout */
 .app {
   min-height: 100vh;
   display: flex;
@@ -26,7 +28,7 @@ body {
   width: 100%;
 }
 
-/* 기본 버튼 스타일 */
+/* button style */
 button {
   padding: 0.5rem 1rem;
   border: 1px solid #ddd;
@@ -44,7 +46,7 @@ button:disabled {
   cursor: not-allowed;
 }
 
-/* 기본 폼 스타일 */
+/* form style */
 input, select, textarea {
   padding: 0.5rem;
   border: 1px solid #ddd;
@@ -59,7 +61,7 @@ label {
   font-weight: 600;
 }
 
-/* 푸터 */
+/* footer style */
 .footer {
   background: #333;
   color: white;
@@ -68,13 +70,13 @@ label {
   margin-top: auto;
 }
 
-/* 로딩 */
+/* loading style */
 .loading {
   text-align: center;
   padding: 2rem;
 }
 
-/* 에러 */
+/* error style */
 .error {
   color: red;
   padding: 1rem;

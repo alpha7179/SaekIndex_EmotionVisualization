@@ -3,9 +3,8 @@ import React, { useState } from 'react';
 import styled from '@emotion/styled';
 import SurveyForm from '../components/SurveyForm';
 import { useTranslation } from 'react-i18next';
-import PageHeader from '../components/PageHeader'; // PageHeader import
+import PageHeader from '../components/PageHeader';
 
-// 페이지 전체를 감싸는 컨테이너 추가
 const PageContainer = styled.div`
   padding: 3rem 1rem;
 `;
@@ -34,10 +33,8 @@ const StartContainer = styled.div`
 function AnalyzePage() {
   const { t } = useTranslation();
 
-  // 설문 시작 여부를 추적하는 상태를 만듭니다. (기본값: false)
   const [isSurveyStarted, setIsSurveyStarted] = useState(false);
 
-  // 버튼 클릭 시 isSurveyStarted 상태를 true로 변경하는 함수
   const handleStartSurvey = () => {
     setIsSurveyStarted(true);
   };
@@ -50,10 +47,8 @@ function AnalyzePage() {
         subtitle={t('AnalyzePage.subtitle')}
         />
       {isSurveyStarted ? (
-        // true이면 설문 폼을 보여줍니다.
         <SurveyForm />
       ) : (
-        // false이면 시작 버튼을 보여줍니다.
         <StartContainer>
           <StartButton onClick={handleStartSurvey}>
             {t('AnalyzePage.survaystart')}

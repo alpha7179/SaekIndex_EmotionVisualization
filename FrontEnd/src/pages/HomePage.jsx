@@ -5,7 +5,7 @@ import styled from '@emotion/styled';
 import { FaPoll, FaChartBar } from 'react-icons/fa';
 import { useTranslation } from 'react-i18next';
 import GradientIcon from '../components/GradientIcon';
-import PageHeader from '../components/PageHeader'; // PageHeader import
+import PageHeader from '../components/PageHeader';
 
 const HomeContainer = styled.div`
   text-align: center;

@@ -7,7 +7,6 @@ import FormField from './FormField';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
-// 1. 두 언어의 설문 파일을 모두 import 합니다.
 import surveyKO from '../data/survey.ko.json';
 import surveyEN from '../data/survey.en.json';
 
@@ -18,7 +17,6 @@ const SubmitButton = styled.button`
   width: 100%; padding: 1rem; background: linear-gradient(135deg, #b84182ff 0%, #ddc9bfff 100%); color: white; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: 600; cursor: pointer;
 `;
 
-// 2. 언어별 설문 데이터를 담을 객체를 만듭니다.
 const surveys = {
   ko: surveyKO,
   en: surveyEN,
@@ -29,7 +27,6 @@ function SurveyForm() {
   const navigate = useNavigate();
   const today = new Date().toISOString().split('T')[0];
   
-  // 3. 현재 언어(i18n.language)에 맞는 설문 데이터를 선택합니다. (기본값은 'ko')
   const surveyData = surveys[i18n.language] || surveys.ko;
 
   const { register, handleSubmit, watch, formState: { errors, isSubmitting } } = useForm({
@@ -40,14 +37,12 @@ function SurveyForm() {
 
   const onSubmit = async (data) => {
     try {
-      // 1. 우리 서버(Netlify Function)의 주소로 데이터를 보냅니다.
-      // Netlify는 자동으로 /api/파일이름 과 같은 주소를 만들어줍니다.
       const response = await fetch('/.netlify/functions/submit-survey', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data), // 2. 데이터를 JSON 문자열로 변환하여 보냅니다.
+        body: JSON.stringify(data),
       });
 
       if (!response.ok) {
@@ -60,7 +55,7 @@ function SurveyForm() {
 
       setTimeout(() => {
         navigate('/'); 
-      }, 1000); // 1000ms = 1초
+      }, 1000);
 
     } catch (error) {
       console.error('Error submitting survey:', error);
@@ -74,7 +69,7 @@ function SurveyForm() {
         <input type="hidden" name="form-name" value="survey-submit" />
 
         {surveyData.map((field) => {
-          // 4. 이제 t() 함수로 감쌀 필요 없이, JSON 파일의 텍스트를 그대로 사용합니다.
+
           const label = field.name === 'age' 
             ? `${field.label}: ${ageValue}` 
             : field.label;

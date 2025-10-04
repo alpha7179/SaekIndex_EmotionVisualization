@@ -2,9 +2,8 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import styled from '@emotion/styled';
-import { useTranslation } from 'react-i18next'; // 1. useTranslation 훅 import
+import { useTranslation } from 'react-i18next';
 
-// 헤더 전체를 감싸는 컨테이너
 const HeaderContainer = styled.header`
   width: 100%;
   background: white;
@@ -17,20 +16,17 @@ const HeaderContainer = styled.header`
   align-items: center;
 `;
 
-// 좌측 로고
 const Logo = styled(Link)`
   font-size: 1.5rem;
   font-weight: 800;
   color: #333d4b; /* 토스의 메인 텍스트 색상과 유사하게 */
 `;
 
-// 중앙 메뉴 영역
 const Nav = styled.nav`
   display: flex;
   gap: 2rem; /* 메뉴 사이 간격 */
 `;
 
-// 개별 메뉴 링크
 const NavLink = styled(Link)`
   font-size: 1rem;
   font-weight: 600;
@@ -47,7 +43,6 @@ const NavLink = styled(Link)`
   }
 `;
 
-// 우측 언어 선택 영역
 const LangSwitcher = styled.div`
   display: flex;
   align-items: center;
@@ -80,11 +75,10 @@ const HeaderLogo = styled.strong`
   color: transparent;
 `;
 
-// --- Header 컴포넌트 ---
 
 function Header() {
   const location = useLocation();
-  const { t, i18n } = useTranslation(); // 2. t(번역 함수), i18n(언어 변경 인스턴스) 가져오기
+  const { t, i18n } = useTranslation();
 
   const changeLanguage = (lang) => {
     i18n.changeLanguage(lang);
@@ -99,7 +93,7 @@ function Header() {
       <Logo to="/"><HeaderLogo>색인</HeaderLogo></Logo>
 
       <Nav>
-        {/* 3. 메뉴 텍스트를 t 함수로 감싸 번역 키를 사용하도록 변경 */}
+        {}
         <NavLink to="/" className={isActive('/')}>
           {t('menu.home')}
         </NavLink>
@@ -112,7 +106,7 @@ function Header() {
       </Nav>
 
       <LangSwitcher>
-        {/* 4. 버튼 클릭 시 언어 변경 함수 호출 및 현재 언어에 따라 active prop 전달 */}
+        {}
         <LangButton active={i18n.language === 'ko'} onClick={() => changeLanguage('ko')}>
           KOR
         </LangButton>

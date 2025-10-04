@@ -1,3 +1,4 @@
+/* src/pages/DataPage.jsx */
 import React, { useState, useEffect } from 'react';
 import styled from '@emotion/styled';
 import PageHeader from '../components/PageHeader';
@@ -29,15 +30,15 @@ function DataPage() {
       try {
         const response = await fetch('/.netlify/functions/get-submissions', {
           headers: {
-            // Netlify에 설정한 비밀 키를 헤더에 담아 보냅니다.
-            'x-secret-key': import.meta.env.VITE_API_SECRET_KEY // 2단계에서 설정한 값과 일치해야 함
+
+            'x-secret-key': import.meta.env.VITE_API_SECRET_KEY 
           }
         });
         if (!response.ok) {
           throw new Error('Failed to fetch data');
         }
         const data = await response.json();
-        setSubmissions(data.map(item => item.data)); // 실제 데이터는 'data' 필드 안에 있습니다.
+        setSubmissions(data.map(item => item.data));
       } catch (err) {
         setError(err.message);
       } finally {

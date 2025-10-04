@@ -1,3 +1,4 @@
+/** src/styles/GlobalStyles.jsx */
 /** @jsxImportSource @emotion/react */
 import { Global, css } from '@emotion/react';
 
