@@ -10,7 +10,8 @@ import './App.css';
 import HomePage from './pages/HomePage';
 import AnalyzePage from './pages/AnalyzePage';
 import VisualizationPage from './pages/VisualizationPage';
-import DataPage from './pages/DataPage';
+import AdminPage from './pages/AdminPage';
+import SubmissionsPage from './pages/SubmissionsPage';
 
 // Components
 import Header from './components/Header';
@@ -20,7 +21,14 @@ import NotFound from './components/NotFound';
 // Styles
 import GlobalStyles from './styles/GlobalStyles';
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5,
+      retry: 1,
+    },
+  },
+});
 
 function App() {
   return (
@@ -34,7 +42,8 @@ function App() {
               <Route path="/" element={<HomePage />} />
               <Route path="/analyze" element={<AnalyzePage />} />
               <Route path="/visualization" element={<VisualizationPage />} />
-              <Route path="/data" element={<DataPage />} /> 
+              <Route path="/admin" element={<AdminPage />} />
+              <Route path="/submissions" element={<SubmissionsPage />} /> 
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>

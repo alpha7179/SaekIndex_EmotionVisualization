@@ -1,10 +1,10 @@
-// src/models/survey.model.js
+// src/models/submission.model.js
+
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
-const SurveySchema = new Schema({
-
-  submissionId: { type: Schema.Types.ObjectId, ref: 'Submission' },
+const SubmissionSchema = new Schema({
+ 
   date: { type: String, required: true },
   name: { type: String, required: true },
   age: { type: Number, required: true },
@@ -12,6 +12,8 @@ const SurveySchema = new Schema({
   question2: String,
   question3: String,
   question4: String,
+  
+  status: { type: String, enum: ['pending', 'approved', 'rejected'], default: 'pending', index: true }
 }, { timestamps: true });
 
-module.exports = mongoose.model('Survey', SurveySchema);
+module.exports = mongoose.model('Submission', SubmissionSchema);
