@@ -11,7 +11,6 @@ import HomePage from './pages/HomePage';
 import AnalyzePage from './pages/AnalyzePage';
 import VisualizationPage from './pages/VisualizationPage';
 import AdminPage from './pages/AdminPage';
-import SubmissionsPage from './pages/SubmissionsPage';
 
 // Components
 import Header from './components/Header';
@@ -43,7 +42,6 @@ function App() {
               <Route path="/analyze" element={<AnalyzePage />} />
               <Route path="/visualization" element={<VisualizationPage />} />
               <Route path="/admin" element={<AdminPage />} />
-              <Route path="/submissions" element={<SubmissionsPage />} /> 
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>

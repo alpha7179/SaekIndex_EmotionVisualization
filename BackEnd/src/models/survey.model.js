@@ -14,4 +14,4 @@ const SurveySchema = new Schema({
   question4: String,
 }, { timestamps: true });
 
-module.exports = mongoose.model('Survey', SurveySchema);
+module.exports = mongoose.models.Survey || mongoose.model('Survey', SurveySchema);

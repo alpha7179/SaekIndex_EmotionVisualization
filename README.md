@@ -103,6 +103,12 @@ npm run dev
 
 > 💡 브라우저에서 http://localhost:5173 이 열리면 성공!
 
+### 🌐 1. 백엔드: Express 프로젝트 개발환경
+```bash
+npm install express --save
+```
+
+
 ## 🔄 AWS 업데이트 방법
 ### 🔄 1. 프론트엔드: AWS S3와 CloudFront 서비스 수정
 이 프로젝트는 AWS S3와 CloudFront를 통해 배포됩니다. N코드 수정 후에는 수동으로 빌드 및 업로드 과정을 거쳐야 합니다.
@@ -144,7 +150,6 @@ npm run build
 FrontEnd/
 ├── .gitignore
 ├── .env
-├── README.md
 ├── eslint.config.js
 ├── index.html
 ├── netlify.toml
@@ -171,13 +176,14 @@ FrontEnd/
 │   │   ├── Header.jsx
 │   │   ├── NotFound.jsx
 │   │   ├── PageHeader.jsx
+│   │   ├── SurveyEditForm.jsx
 │   │   └── SurveyForm.jsx
 │   ├── data/                 # JSON 데이터
 │   │   ├── survey.en.json
 │   │   └── survey.ko.json
 │   ├── pages/                # 페이지 컴포넌트
+│   │   ├── AdminPage.jsx
 │   │   ├── AnalyzePage.jsx
-│   │   ├── DataPage.jsx
 │   │   ├── HomePage.jsx
 │   │   └── VisualizationPage.jsx
 │   ├── services/             # API 로직
@@ -195,6 +201,32 @@ FrontEnd/
 ### 2. BackEnd 구조
 
 ```
+BackEnd/
+├── .gitignore
+├── .env
+├── package.json
+├── package-lock.json
+├── server.js
+├── src/
+│   ├── config/
+│   │   └── db.js
+│   ├── controllers/
+│   │   └── surveys.controller.js
+│   ├── data/                 # JSON 데이터
+│   │   └── surveys_seed.json.json
+│   ├── middleware/
+│   │   ├── error.middleware.js
+│   │   └── notFound.middleware.js
+│   ├── models/
+│   │   └── survey.model.js
+│   ├── routes/
+│   │   └── surveys.routes.js
+│   ├── services/
+│   │   └── surveys.service.
+│   ├── utils/
+│   │   └── asyncHandler.js
+│   └── app.js
+└── 
 ```
 
 ---
@@ -269,21 +301,12 @@ npm install
   </head>
   <body>
       <noscript>이 앱을 실행하려면 JavaScript를 활성화해야 합니다.</noscript>
-  
-    <form name="survey-submit" netlify hidden>
-      <input type="date" name="date" />
-      <input type="text" name="name" />
-      <input type="range" name="age" />
-      <input type="radio" name="question1" />
-      <input type="checkbox" name="question2" />
-      <select name="question3"></select>
-      <textarea name="question4"></textarea>
-    </form>
 
   <div id="root"></div>
   <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
+
 ```
 
 #### 1-2. src/
@@ -321,7 +344,7 @@ import './App.css';
 import HomePage from './pages/HomePage';
 import AnalyzePage from './pages/AnalyzePage';
 import VisualizationPage from './pages/VisualizationPage';
-import DataPage from './pages/DataPage';
+import AdminPage from './pages/AdminPage';
 
 // Components
 import Header from './components/Header';
@@ -331,7 +354,14 @@ import NotFound from './components/NotFound';
 // Styles
 import GlobalStyles from './styles/GlobalStyles';
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5,
+      retry: 1,
+    },
+  },
+});
 
 function App() {
   return (
@@ -345,7 +375,7 @@ function App() {
               <Route path="/" element={<HomePage />} />
               <Route path="/analyze" element={<AnalyzePage />} />
               <Route path="/visualization" element={<VisualizationPage />} />
-              <Route path="/data" element={<DataPage />} /> 
+              <Route path="/admin" element={<AdminPage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
@@ -395,6 +425,7 @@ export default i18n;
 1-2-4. src/index.css
 ```css
 /* src/index.css */
+
 @font-face {
     font-family: 'ChangwonDanggamAsak';
     src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/CWDangamAsac-Bold.woff') format('woff');
@@ -542,8 +573,34 @@ export default GlobalStyles;
 
 1-4-1. src/services/api.jsx
 ```jsx
-/* src/services/api.jsx */
+// src/services/api.jsx
+import axios from 'axios';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000';
 
+const api = axios.create({ baseURL: API_BASE_URL });
+
+export const surveyAPI = {
+  createSurvey: async (payload) => {
+    const response = await api.post('/api/surveys', payload);
+    return response.data;
+  },
+  getSurveys: async (page = 1) => {
+    const response = await api.get('/api/surveys', { params: { page } });
+    return response.data;
+  },
+  updateSurvey: async (id, payload) => {
+    const response = await api.put(`/api/surveys/${id}`, payload);
+    return response.data;
+  },
+  deleteSurvey: async (id) => {
+    const response = await api.delete(`/api/surveys/${id}`);
+    return response.status;
+  },
+  getSurveyStats: async () => {
+    const response = await api.get('/api/surveys/stats');
+    return response.data;
+  },
+};
 
 ```
 
@@ -650,7 +707,6 @@ function Footer() {
 }
 
 export default Footer;
-
 ```
 
 
@@ -663,17 +719,18 @@ import styled from '@emotion/styled';
 const FormGroup = styled.div`
   margin-bottom: 2.5rem; 
 `;
-
 const Label = styled.label`
   display: block;
   font-weight: 600;
   color: #555;
   margin-bottom: ${props => 
-    (props.type === 'radio' || props.type === 'checkbox') ? '2.5rem' : '0.5rem'};
+    (props.type === 'radio' || props.type === 'checkbox') ? '1rem' : '0.5rem'};
 `;
-
 const Input = styled.input`
   width: 100%; padding: 0.75rem; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 1rem;
+  &[type='range'] {
+    padding: 0;
+  }
 `;
 const Select = styled.select`
   width: 100%; padding: 0.75rem; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 1rem;
@@ -684,75 +741,100 @@ const Textarea = styled.textarea`
 const ErrorMessage = styled.span`
   color: #ff4757; font-size: 0.875rem; margin-top: 0.25rem; display: block;
 `;
-
 const OptionWrapper = styled.div`
-  display: flex;
-  flex-direction: column; /* 아이템(버튼, 텍스트)을 위아래 수직으로 쌓음 */
-  align-items: center;   /* 수직으로 쌓인 아이템들을 가운데 정렬 */
-  gap: 0.25rem;          /* 버튼과 텍스트 사이 간격 */
-  flex: 1;               /* 각 선택지가 동일한 너비를 갖도록 함 */
+  display: flex; flex-direction: column; align-items: center; gap: 0.25rem; flex: 1;
 `;
-
 const RequiredMark = styled.span`
-  color: red;
-  margin-left: 0.25rem;
+  color: red; margin-left: 0.25rem;
+`;
+const RangeContainer = styled.div`
+  display: flex; align-items: center; gap: 1rem;
+`;
+const NumberInput = styled(Input)`
+  width: 80px; text-align: center;
 `;
 
 
-const InputField = ({ type, name, register, options, ...rest }) => {
-  switch (type) {
-    case 'textarea':
-      return <Textarea id={name} {...register(name)} {...rest} />;
-    case 'select':
-      return (
-        <Select id={name} {...register(name)} {...rest}>
-          {options.map(option => (
-            <option key={option.value} value={option.value} disabled={option.disabled}>
-              {option.label}
-            </option>
-          ))}
-        </Select>
-      );
-    case 'radio':
-      return (
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem' }}>
-          {options.map(option => (
-            <OptionWrapper key={option.value}>
-              <input type="radio" value={option.value} {...register(name)} {...rest} />
-              <span>{option.label}</span>
-            </OptionWrapper>
-          ))}
-        </div>
-      );
-    case 'checkbox':
-        return (
-            <div style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem' }}>
-              {options.map(option => (
-                <OptionWrapper key={option.value}>
-                    <input type="checkbox" value={option.value} {...register(name)} {...rest} />
-                    <span>{option.label}</span>
-                </OptionWrapper>
-              ))}
-            </div>
-        );
-    default:
-      return <Input id={name} type={type} {...register(name)} {...rest} />;
+
+const FormField = ({ label, name, type, register, errors, options, validation, min, max, watch, setValue, readOnly, ...rest }) => {
+  const validationRules = { ...validation };
+  if (min !== undefined) {
+    validationRules.min = { value: min, message: `최소 ${min} 이상이어야 합니다.` };
   }
-};
+  if (max !== undefined) {
+    validationRules.max = { value: max, message: `최대 ${max} 이하여야 합니다.` };
+  }
 
+  const watchedValue = watch ? watch(name) : undefined;
 
-const FormField = ({ label, name, type, register, errors, options, validation, ...rest }) => {
   return (
     <FormGroup>
-      <Label htmlFor={name} type={type}>{label}{validation?.required && <RequiredMark>*</RequiredMark>}</Label>
-      <InputField
-        type={type}
-        name={name}
-        register={register}
-        options={options}
-        {...validation ? { ...register(name, validation) } : { ...register(name) }}
-        {...rest}
-      />
+      <Label htmlFor={name} type={type}>
+        {label}
+        {validation?.required && <RequiredMark>*</RequiredMark>}
+      </Label>
+      
+      {(() => {
+        switch (type) {
+          case 'range':
+            return (
+              <RangeContainer>
+                <Input
+                  id={name}
+                  type="range"
+                  min={min}
+                  max={max}
+                  {...register(name, validationRules)}
+                  {...rest}
+                  disabled={readOnly}
+                />
+                <NumberInput
+                  type="number"
+                  min={min}
+                  max={max}
+                  value={watchedValue === undefined ? '' : watchedValue}
+                  onChange={(e) => { }}
+                  disabled={readOnly}
+                />
+              </RangeContainer>
+            );
+          case 'textarea':
+            return <Textarea id={name} {...register(name, validationRules)} {...rest} disabled={readOnly} />;
+          case 'select':
+            return (
+              <Select id={name} {...register(name, validationRules)} {...rest} disabled={readOnly}>
+                {options.map(option => (
+                  <option key={option.value} value={option.value} disabled={option.disabled}>{option.label}</option>
+                ))}
+              </Select>
+            );
+          case 'radio':
+            return (
+              <div style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem' }}>
+                {options.map(option => (
+                  <OptionWrapper key={option.value}>
+                    <input type="radio" value={option.value} {...register(name, validationRules)} disabled={readOnly} />
+                    <span>{option.label}</span>
+                  </OptionWrapper>
+                ))}
+              </div>
+            );
+          case 'checkbox':
+            return (
+              <div style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem' }}>
+                {options.map(option => (
+                  <OptionWrapper key={option.value}>
+                    <input type="checkbox" value={option.value} {...register(name, validationRules)} disabled={readOnly} />
+                    <span>{option.label}</span>
+                  </OptionWrapper>
+                ))}
+              </div>
+            );
+          default:
+            return <Input id={name} type={type} {...register(name, validationRules)} {...rest} disabled={readOnly} />;
+        }
+      })()}
+
       {errors[name] && <ErrorMessage>{errors[name].message}</ErrorMessage>}
     </FormGroup>
   );
@@ -1019,25 +1101,108 @@ function PageHeader({ icon, title, subtitle }) {
 export default PageHeader;
 ```
 
-1-5-7. src/components/SurveyForm.jsx
+1-5-7. src/components/SurveyEditForm.jsx
 ```jsx
-/* src/components/SurveyForm.jsx */
-import React from 'react';
+// src/components/SurveyEditForm.jsx
+import React, { useEffect } from 'react';
+import styled from '@emotion/styled';
+import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
+
+import FormField from './FormField';
+import surveyKO from '../data/survey.ko.json';
+import surveyEN from '../data/survey.en.json';
+
+const Panel = styled.div` background: white; border-radius: 12px; padding: 1rem; `;
+const Actions = styled.div` display: flex; gap: 0.5rem; margin-top: 1rem; `;
+const Button = styled.button` /* ... */ `;
+
+const surveys = {
+  ko: surveyKO,
+  en: surveyEN,
+};
+
+function SurveyEditForm({ selectedSurvey, onSubmit, onReset, isSubmitting, isReadOnly }) {
+  const { i18n } = useTranslation();
+
+  const { register, handleSubmit, reset, setValue, watch, formState: { errors } } = useForm();
+  
+  const surveyData = surveys[i18n.language] || surveys.ko;
+
+  useEffect(() => {
+    if (selectedSurvey) {
+      surveyData.forEach(field => {
+        let value = selectedSurvey[field.name] || '';
+        if (field.name === 'date' && value) {
+          value = new Date(value).toISOString().split('T')[0];
+        }
+        setValue(field.name, value);
+      });
+    } else {
+      reset();
+    }
+  }, [selectedSurvey, setValue, reset, surveyData]);
+
+  return (
+    <Panel>
+      <h3>{selectedSurvey ? `${selectedSurvey.name}님의 설문 상세` : '항목 선택'}</h3>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        {surveyData.map((field) => (
+          <FormField
+            key={field.name}
+            readOnly={isReadOnly || field.readOnly} 
+            type={field.type}
+            name={field.name}
+            label={field.label}
+            register={register}
+            errors={errors}
+            options={field.options}
+            validation={{}}
+            min={field.min}
+            max={field.max}
+            placeholder={field.placeholder}
+            watch={watch}
+            setValue={setValue}
+          />
+        ))}
+        
+        {!isReadOnly && (
+          <Actions>
+            <Button type="submit" disabled={isSubmitting || !selectedSurvey}>수정하기</Button>
+            <Button type="button" onClick={onReset}>폼 초기화</Button>
+          </Actions>
+        )}
+      </form>
+    </Panel>
+  );
+}
+
+export default SurveyEditForm;
+```
+
+1-5-8. src/components/SurveyForm.jsx
+```jsx
+// src/components/SurveyForm.jsx
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import styled from '@emotion/styled';
 import { toast } from 'react-toastify';
 import FormField from './FormField';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-
 import surveyKO from '../data/survey.ko.json';
 import surveyEN from '../data/survey.en.json';
+import { surveyAPI } from '../services/api';
 
 const FormContainer = styled.div`
   background: white; padding: 2rem; border-radius: 12px; max-width: 600px; margin: 0 auto;
 `;
 const SubmitButton = styled.button`
   width: 100%; padding: 1rem; background: linear-gradient(135deg, #b84182ff 0%, #ddc9bfff 100%); color: white; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: 600; cursor: pointer;
+  &:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+  }
 `;
 
 const surveys = {
@@ -1049,40 +1214,27 @@ function SurveyForm() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const today = new Date().toISOString().split('T')[0];
-  
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const surveyData = surveys[i18n.language] || surveys.ko;
 
-  const { register, handleSubmit, watch, formState: { errors, isSubmitting } } = useForm({
+  const { register, handleSubmit, watch, setValue, formState: { errors }, reset } = useForm({
     defaultValues: { date: today, age: 25, question3: '' }
   });
 
-  const ageValue = watch('age');
-
   const onSubmit = async (data) => {
+    setIsSubmitting(true);
     try {
-      const response = await fetch('/.netlify/functions/submit-survey', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) {
-        throw new Error('Server responded with an error');
-      }
-
-      const result = await response.json();
-      console.log('Success:', result);
-      toast.success(t('AnalyzePage.success'));
-
-      setTimeout(() => {
-        navigate('/'); 
-      }, 1000);
-
+      const result = await surveyAPI.createSurvey(data);
+      console.log("Server response:", result);
+      toast.success('설문이 성공적으로 제출되었습니다!');
+      reset();
+      setTimeout(() => navigate('/'), 1000);
     } catch (error) {
-      console.error('Error submitting survey:', error);
-      toast.error(t('AnalyzePage.error'));
+      console.error("Submission error:", error);
+      toast.error('제출 중 오류가 발생했습니다. 다시 시도해주세요.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -1091,33 +1243,24 @@ function SurveyForm() {
       <form onSubmit={handleSubmit(onSubmit)} name="survey-submit">
         <input type="hidden" name="form-name" value="survey-submit" />
 
-        {surveyData.map((field) => {
-
-          const label = field.name === 'age' 
-            ? `${field.label}: ${ageValue}` 
-            : field.label;
-          
-          const validation = field.validation?.required 
-            ? { required: field.validation.required } 
-            : {};
-          
-          return (
-            <FormField
-              key={field.name}
-              type={field.type}
-              name={field.name}
-              label={label}
-              register={register}
-              errors={errors}
-              options={field.options}
-              validation={validation}
-              readOnly={field.readOnly}
-              min={field.min}
-              max={field.max}
-              placeholder={field.placeholder}
-            />
-          );
-        })}
+        {surveyData.map((field) => (
+          <FormField
+            key={field.name}
+            type={field.type}
+            name={field.name}
+            label={field.label}
+            register={register}
+            errors={errors}
+            options={field.options}
+            validation={field.validation || {}}
+            readOnly={field.readOnly}
+            min={field.min}
+            max={field.max}
+            placeholder={field.placeholder}
+            watch={watch}
+            setValue={setValue}
+          />
+        ))}
 
         <SubmitButton type="submit" disabled={isSubmitting}>
           {isSubmitting ? t('AnalyzePage.submitload') : t('AnalyzePage.submit')}
@@ -1133,6 +1276,142 @@ export default SurveyForm;
 #### 1-6. src/pages/
 
 1-6-1. src/pages/AnalyzePage.jsx
+```jsx
+//src/pages/AdminPage.jsx
+import React, { useState } from 'react';
+import styled from '@emotion/styled';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { surveyAPI } from '../services/api';
+import { toast } from 'react-toastify';
+import PageHeader from '../components/PageHeader';
+import SurveyEditForm from '../components/SurveyEditForm';
+
+const Container = styled.div` 
+  padding: 2rem; 
+  max-width: 1200px;
+  margin: 0 auto;
+`;
+const Grid = styled.div` display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; @media (max-width: 992px) { grid-template-columns: 1fr; } `;
+const Panel = styled.div` background: white; border-radius: 12px; padding: 1rem; `;
+const Table = styled.table` width: 100%; border-collapse: collapse; font-size: 0.9rem; th, td { border-bottom: 1px solid #eee; padding: 0.75rem; text-align: left; vertical-align: top; } th { background: #fafafa; } tr:hover { background: #fafafa; } `;
+const Actions = styled.div` display: flex; gap: 0.5rem; `;
+const Button = styled.button` padding: 0.4rem 0.75rem; border: 1px solid #ddd; border-radius: 6px; background: white; cursor: pointer; &:hover { background: #f5f5f5; } &:disabled { cursor: not-allowed; opacity: 0.5; }`;
+const Danger = styled(Button)` color: #ff4757; border-color: #ffb3ba; `;
+const AnswerList = styled.ul` list-style: none; padding: 0; margin: 0; font-size: 0.85rem; li { margin-bottom: 0.25rem; } strong { margin-right: 0.5rem; }`;
+const PaginationContainer = styled.div` display: flex; justify-content: center; align-items: center; margin-top: 1rem; gap: 0.5rem; `;
+const PageButton = styled.button` padding: 0.5rem 0.8rem; border: 1px solid ${props => (props.isActive ? '#667eea' : '#ddd')}; background: ${props => (props.isActive ? '#667eea' : 'white')}; color: ${props => (props.isActive ? 'white' : '#333')}; border-radius: 6px; cursor: pointer; &:disabled { cursor: not-allowed; opacity: 0.5; } `;
+
+function AdminPage() {
+  const queryClient = useQueryClient();
+  const [selected, setSelected] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['surveys', currentPage],
+    queryFn: () => surveyAPI.getSurveys(currentPage),
+    keepPreviousData: true,
+  });
+
+  const surveys = data?.data?.surveys || [];
+  const totalPages = data?.data?.totalPages || 1;
+
+  const deleteMutation = useMutation({
+    mutationFn: (id) => surveyAPI.deleteSurvey(id),
+    onSuccess: () => {
+      toast.info('삭제 완료');
+      queryClient.invalidateQueries({ queryKey: ['surveys', currentPage] });
+      if (surveys.length === 1 && currentPage > 1) {
+        setCurrentPage(currentPage - 1);
+      }
+      setSelected(null);
+    },
+  });
+
+
+  const onDelete = async (row) => {
+    if (!confirm(`[삭제] '${row.name}'님의 설문을 삭제할까요?`)) return;
+    await deleteMutation.mutateAsync(row._id);
+  };
+  
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+    }
+  };
+
+  if (isLoading) return <div>로딩 중...</div>;
+  if (error) return <div>에러: {error.message}</div>;
+
+  return (
+    <Container>
+      <PageHeader
+        icon="🗂️"
+        title="설문 데이터 통합 관리"
+        subtitle="사용자가 제출한 모든 설문 데이터를 관리합니다."
+      />
+      <Grid>
+        <Panel>
+          <Table>
+            <thead>
+              <tr>
+                <th>제출일</th>
+                <th>제출시간</th>
+                <th>이름</th>
+                <th>나이</th>
+                <th>액션</th>
+              </tr>
+            </thead>
+            <tbody>
+              {surveys.map((s) => {
+                const submissionDate = new Date(s.createdAt);
+                return (
+                  <tr key={s._id}>
+                    <td>{submissionDate.toLocaleDateString()}</td>
+                    <td>{submissionDate.toLocaleTimeString()}</td>
+                    <td>{s.name}</td>
+                    <td>{s.age}세</td>
+                    <td>
+                      <Actions>
+                        <Button onClick={() => setSelected(s)}>확인</Button>
+                        <Danger onClick={() => onDelete(s)}>삭제</Danger>
+                      </Actions>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </Table>
+          
+          <PaginationContainer>
+            <PageButton onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
+              이전
+            </PageButton>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+              <PageButton key={page} onClick={() => handlePageChange(page)} isActive={page === currentPage}>
+                {page}
+              </PageButton>
+            ))}
+            <PageButton onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>
+              다음
+            </PageButton>
+          </PaginationContainer>
+        </Panel>
+
+        <SurveyEditForm
+          selectedSurvey={selected}
+          onReset={() => setSelected(null)}
+          isReadOnly={true}
+        />
+      </Grid>
+    </Container>
+  );
+}
+
+export default AdminPage;
+
+```
+
+1-6-2. src/pages/AnalyzePage.jsx
 ```jsx
 /* src/pages/AnalyzePage.jsx */
 import React, { useState } from 'react';
@@ -1196,85 +1475,6 @@ function AnalyzePage() {
 }
 
 export default AnalyzePage;
-```
-
-1-6-2. src/pages/DataPage.jsx
-```jsx
-/* src/pages/DataPage.jsx */
-import React, { useState, useEffect } from 'react';
-import styled from '@emotion/styled';
-import PageHeader from '../components/PageHeader';
-
-const PageContainer = styled.div`
-  padding: 3rem 1rem;
-`;
-const Table = styled.table`
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 2rem;
-  th, td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: left;
-  }
-  th {
-    background-color: #f2f2f2;
-  }
-`;
-
-function DataPage() {
-  const [submissions, setSubmissions] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch('/.netlify/functions/get-submissions', {
-          headers: {
-
-            'x-secret-key': import.meta.env.VITE_API_SECRET_KEY 
-          }
-        });
-        if (!response.ok) {
-          throw new Error('Failed to fetch data');
-        }
-        const data = await response.json();
-        setSubmissions(data.map(item => item.data));
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, []);
-
-  if (loading) return <PageContainer>Loading...</PageContainer>;
-  if (error) return <PageContainer>Error: {error}</PageContainer>;
-
-  return (
-    <PageContainer>
-      <PageHeader title="설문조사 결과" />
-      <Table>
-        <thead>
-          <tr>
-            {submissions.length > 0 && Object.keys(submissions[0]).map(key => <th key={key}>{key}</th>)}
-          </tr>
-        </thead>
-        <tbody>
-          {submissions.map((submission, index) => (
-            <tr key={index}>
-              {Object.values(submission).map((value, i) => <td key={i}>{Array.isArray(value) ? value.join(', ') : value}</td>)}
-            </tr>
-          ))}
-        </tbody>
-      </Table>
-    </PageContainer>
-  );
-}
-
-export default DataPage;
 ```
 
 1-6-3. src/pages/HomePage.jsx
@@ -1612,7 +1812,365 @@ export default VisualizationPage;
 
 ### 2. BackEnd 구조
 
+#### 2-1. ./(root)
+
+2-1-1. package.json
+```json
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "private": true,
+  "main": "server.js",
+  "scripts": {
+    "dev": "nodemon server.js",
+    "start": "node server.js",
+    "test": "jest --runInBand",
+    "test:watch": "jest --watch --runInBand"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.2",
+    "express": "^5.1.0",
+    "mongoose": "^8.18.2"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "mongodb-memory-server": "^10.2.1",
+    "nodemon": "^3.1.7",
+    "supertest": "^7.0.0"
+  }
+}
+
 ```
+
+```bash
+npm install
 ```
+
+2-1-1. server.js
+```js
+// server.js
+require('dotenv').config();
+const { connectDB, closeDB } = require('./src/config/db');
+const createApp = require('./src/app');
+
+const PORT = process.env.PORT || 4000;
+
+const app = createApp();
+
+async function start() {
+  try {
+    await connectDB(process.env.MONGODB_URI);
+    
+    if (require.main === module) {
+      app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));
+    }
+  } catch (err) {
+    console.error('Failed to start server:', err);
+    process.exit(1);
+  }
+}
+
+start();
+
+// graceful shutdown
+process.on('SIGINT', async () => {
+  console.log('Received SIGINT, shutting down...');
+  await closeDB();
+  process.exit(0);
+});
+process.on('SIGTERM', async () => {
+  console.log('Received SIGTERM, shutting down...');
+  await closeDB();
+  process.exit(0);
+});
+
+module.exports = app;
+```
+
+#### 2-2. src/
+
+2-2. src/app.js
+```js
+// src/app.js
+const express = require('express');
+const cors = require('cors');
+const surveysRouter = require('./routes/surveys.routes');
+const notFound = require('./middleware/notFound.middleware');
+const errorHandler = require('./middleware/error.middleware');
+const mongoose = require('mongoose');
+
+function createApp() {
+  const app = express();
+
+  app.use(cors());
+  app.use(express.json());
+
+  app.get('/health', (req, res) => {
+    const state = mongoose.connection.readyState; // 0=disconnected,1=connected,2=connecting,3=disconnecting
+    res.json({ status: 'ok', db: state });
+  });
+
+  app.use('/api/surveys', surveysRouter);
+
+  app.use(notFound);
+  app.use(errorHandler);
+
+  return app;
+}
+
+module.exports = createApp;
+```
+
+#### 2-3. src/config/
+
+2-3. src/config/db.js
+```js
+// src/config/db.js
+const mongoose = require('mongoose');
+
+async function connectDB(uri, dbName) {
+  if (!uri) {
+    throw new Error('MONGODB_URI is missing. Set it in environment variables.');
+  }
+  await mongoose.connect(uri, {
+    dbName,
+    autoIndex: process.env.NODE_ENV !== 'production',
+    maxPoolSize: 10,
+    serverSelectionTimeoutMS: 10000,
+    family: 4,
+  });
+  mongoose.connection.on('connected', () => {
+    console.log(`[MongoDB] connected: ${mongoose.connection.name}`);
+  });
+  mongoose.connection.on('error', (err) => {
+    console.error('[MongoDB] connection error:', err);
+  });
+}
+
+async function closeDB() {
+  try {
+    await mongoose.connection.close(false);
+    console.log('[MongoDB] connection closed');
+  } catch (err) {
+    console.error('[MongoDB] error on close:', err);
+  }
+}
+
+module.exports = { connectDB, closeDB };
+```
+
+#### 2-4. src/controllers/
+2-4. src/controllers/surveys.controller.js
+```js
+/* src/controllers/surveys.controller.js */
+const service = require('../services/surveys.service');
+const asyncHandler = require('../utils/asyncHandler');
+
+exports.createSurvey = asyncHandler(async (req, res) => {
+  const created = await service.createSurvey(req.body);
+  res.status(201).json({ data: created });
+});
+
+exports.getSurveys = asyncHandler(async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+  
+  const result = await service.getAllSurveys(page, limit);
+  res.json({ data: result });
+});
+exports.getStats = asyncHandler(async (req, res) => { /* ... */ });
+exports.updateSurvey = asyncHandler(async (req, res) => { /* ... */ });
+exports.deleteSurvey = asyncHandler(async (req, res) => {
+   const { id } = req.params;
+  console.log(`[DELETE CONTROLLER] ID: ${id}에 대한 삭제 요청을 받았습니다.`);
+  
+  const deletedDocument = await service.deleteSurvey(id);
+  
+  if (!deletedDocument) {
+    console.log(`[DELETE CONTROLLER] 서비스에서 ID: ${id}에 해당하는 문서를 찾지 못했다고 보고했습니다.`);
+    return res.status(404).json({ error: { message: '삭제할 설문 데이터를 찾을 수 없습니다.' } });
+  }
+  
+  console.log('[DELETE CONTROLLER] 성공적으로 문서를 삭제했습니다. 204 응답을 보냅니다.');
+  res.status(204).send();
+});
+```
+
+#### 2-5. src/data/
+```json
+```
+
+#### 2-6. src/middleware/
+
+2-6-1. src/middleware/error.middleware.js
+```js
+// src/middleware/error.middleware.js
+module.exports = function errorHandler(err, req, res, next) {
+  const status = err.statusCode || 500;
+  const payload = {
+    error: {
+      message: err.message || 'Internal Server Error'
+    }
+  };
+
+  if (process.env.NODE_ENV !== 'production' && err.stack) {
+    payload.error.stack = err.stack;
+  }
+
+  res.status(status).json(payload);
+};
+```
+
+2-6-2. src/middleware/notFound.middleware.js
+```js
+// src/middleware/notFound.middleware.js
+module.exports = function notFound(req, res) {
+  res.status(404).json({ error: { message: 'Resource not found' } });
+};
+```
+
+#### 2-7. src/models/
+
+2-7. src/models/survey.model.js
+```js
+// src/models/survey.model.js
+const mongoose = require('mongoose');
+const { Schema } = mongoose;
+
+const SurveySchema = new Schema({
+
+  submissionId: { type: Schema.Types.ObjectId, ref: 'Submission' },
+  date: { type: String, required: true },
+  name: { type: String, required: true },
+  age: { type: Number, required: true },
+  question1: [String],
+  question2: String,
+  question3: String,
+  question4: String,
+}, { timestamps: true });
+
+module.exports = mongoose.models.Survey || mongoose.model('Survey', SurveySchema);
+```
+
+#### 2-8. src/routes/
+
+2-8. src/routes/surveys.routes.js
+```js
+// src/routes/surveys.routes.js
+const express = require('express');
+const controller = require('../controllers/surveys.controller');
+const asyncHandler = require('../utils/asyncHandler');
+const router = express.Router();
+
+router.post('/', asyncHandler(controller.createSurvey));
+router.get('/', asyncHandler(controller.getSurveys));
+router.get('/stats', asyncHandler(controller.getStats));
+router.put('/:id', asyncHandler(controller.updateSurvey));
+router.delete('/:id', asyncHandler(controller.deleteSurvey));
+
+module.exports = router;
+```
+#### 2-9. src/services/
+
+2-9. src/services/surveys.service.js
+```js
+// src/services/surveys.service.js
+const Survey = require('../models/survey.model');
+
+async function getAllSurveys(page = 1, limit = 10) {
+  try {
+    const skip = (page - 1) * limit;
+
+    const totalSurveys = await Survey.countDocuments();
+
+    const surveys = await Survey.find({})
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .lean();
+
+    return {
+      surveys,
+      totalSurveys,
+      totalPages: Math.ceil(totalSurveys / limit),
+      currentPage: page,
+    };
+  } catch (error) {
+    console.error('[SERVICE ERROR] in getAllSurveys:', error);
+    throw error;
+  }
+}
+
+async function createSurvey(payload) {
+  const survey = new Survey(payload);
+  await survey.save();
+  return survey;
+}
+
+async function getSurveyStats() {
+  const allSurveys = await Survey.find({});
+  if (allSurveys.length === 0) {
+    return { totalSurveys: 0, message: "No data available." };
+  }
+  const ageDistribution = allSurveys.reduce((acc, survey) => {
+    const age = survey.age;
+    if (age <= 19) acc['10대'] = (acc['10대'] || 0) + 1;
+    else if (age <= 29) acc['20대'] = (acc['20대'] || 0) + 1;
+    else if (age <= 39) acc['30대'] = (acc['30대'] || 0) + 1;
+    else acc['40대 이상'] = (acc['40대 이상'] || 0) + 1;
+    return acc;
+  }, {});
+
+  return {
+    totalSurveys: allSurveys.length,
+    ageDistribution: Object.entries(ageDistribution).map(([range, count]) => ({ range, count })),
+  };
+}
+
+async function updateSurvey(id, payload) {
+  const updateData = Object.fromEntries(
+    Object.entries(payload).filter(([_, v]) => v !== null && v !== undefined && v !== '')
+  );
+  return await Survey.findByIdAndUpdate(
+    id, { $set: updateData }, { new: true, runValidators: true, lean: true }
+  );
+}
+
+async function deleteSurvey(id) {
+   console.log(`[DELETE SERVICE] ID: ${id}로 DB에서 문서를 찾아서 삭제를 시도합니다.`);
+  try {
+    const result = await Survey.findByIdAndDelete(id).lean();
+    
+    if (result) {
+      console.log('[DELETE SERVICE] Mongoose가 성공적으로 문서를 찾아 삭제했습니다.');
+    } else {
+      console.log('[DELETE SERVICE] Mongoose가 해당 ID의 문서를 찾지 못했습니다. null을 반환합니다.');
+    }
+    return result;
+  } catch (error) {
+    console.error('[DELETE SERVICE] findByIdAndDelete 함수 실행 중 심각한 오류 발생:', error);
+    throw error;
+  }
+}
+
+module.exports = {
+  createSurvey,
+  getAllSurveys,
+  getSurveyStats,
+  updateSurvey,
+  deleteSurvey,
+};
+```
+#### 2-10. src/utils/
+
+2-10. src/utils/asyncHandler.js
+```js
+// src/utils/asyncHandler.js
+module.exports = (handler) => (req, res, next) => {
+  Promise.resolve(handler(req, res, next)).catch(next);
+};
+```
+
 
 ---
