@@ -43,6 +43,10 @@ npm run dev
 ### 🌐 1. 프론트엔드: React + Vite 프로젝트 개발환경
 
 ```bash
+npm install react-chartjs-2 chart.js
+
+npm install d3
+
 npm create vite@latest . -- --template react
 
 > npx
@@ -345,6 +349,7 @@ import HomePage from './pages/HomePage';
 import AnalyzePage from './pages/AnalyzePage';
 import VisualizationPage from './pages/VisualizationPage';
 import AdminPage from './pages/AdminPage';
+import StatsPage from './pages/StatsPage'; 
 
 // Components
 import Header from './components/Header';
@@ -376,6 +381,7 @@ function App() {
               <Route path="/analyze" element={<AnalyzePage />} />
               <Route path="/visualization" element={<VisualizationPage />} />
               <Route path="/admin" element={<AdminPage />} />
+              <Route path="/admin/stats" element={<StatsPage />} /> 
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
@@ -1275,7 +1281,7 @@ export default SurveyForm;
 
 #### 1-6. src/pages/
 
-1-6-1. src/pages/AnalyzePage.jsx
+1-6-1. src/pages/AdminPage.jsx
 ```jsx
 //src/pages/AdminPage.jsx
 import React, { useState } from 'react';
@@ -1285,6 +1291,7 @@ import { surveyAPI } from '../services/api';
 import { toast } from 'react-toastify';
 import PageHeader from '../components/PageHeader';
 import SurveyEditForm from '../components/SurveyEditForm';
+import { Link } from 'react-router-dom';
 
 const Container = styled.div` 
   padding: 2rem; 
@@ -1300,6 +1307,22 @@ const Danger = styled(Button)` color: #ff4757; border-color: #ffb3ba; `;
 const AnswerList = styled.ul` list-style: none; padding: 0; margin: 0; font-size: 0.85rem; li { margin-bottom: 0.25rem; } strong { margin-right: 0.5rem; }`;
 const PaginationContainer = styled.div` display: flex; justify-content: center; align-items: center; margin-top: 1rem; gap: 0.5rem; `;
 const PageButton = styled.button` padding: 0.5rem 0.8rem; border: 1px solid ${props => (props.isActive ? '#667eea' : '#ddd')}; background: ${props => (props.isActive ? '#667eea' : 'white')}; color: ${props => (props.isActive ? 'white' : '#333')}; border-radius: 6px; cursor: pointer; &:disabled { cursor: not-allowed; opacity: 0.5; } `;
+
+const TopActions = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1.5rem;
+`;
+const StatsButton = styled(Link)`
+  padding: 0.5rem 1rem;
+  background: #667eea;
+  color: white;
+  border-radius: 6px;
+  font-weight: 600;
+  &:hover {
+    background: #5a67d8;
+  }
+`;
 
 function AdminPage() {
   const queryClient = useQueryClient();
@@ -1349,6 +1372,11 @@ function AdminPage() {
         title="설문 데이터 통합 관리"
         subtitle="사용자가 제출한 모든 설문 데이터를 관리합니다."
       />
+
+      <TopActions>
+        <StatsButton to="/admin/stats">통계 시각화 보기</StatsButton>
+      </TopActions>
+
       <Grid>
         <Panel>
           <Table>
@@ -1550,7 +1578,116 @@ function HomePage() {
 export default HomePage;
 ```
 
-1-6-4. src/pages/VisualizationPage.jsx
+1-6-4. src/pages/StatsPage.jsx
+```jsx
+// src/pages/StatsPage.jsx
+import React from 'react';
+import styled from '@emotion/styled';
+import { useQuery } from '@tanstack/react-query';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+} from 'chart.js';
+import { Bar } from 'react-chartjs-2';
+import { useTranslation } from 'react-i18next';
+import PageHeader from '../components/PageHeader';
+import { surveyAPI } from '../services/api';
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend
+);
+
+const Container = styled.div`
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+`;
+
+const StatsPage = () => {
+  const { t } = useTranslation();
+  
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['surveyStats'],
+    queryFn: surveyAPI.getSurveyStats,
+    refetchInterval: 10000, // 10초
+  });
+
+  if (isLoading) {
+    return <p>통계 데이터를 불러오는 중입니다...</p>;
+  }
+
+  if (error) {
+    return <p>데이터를 불러오는 데 실패했습니다: {error.message}</p>;
+  }
+
+  if (!data || !data.data || !data.data.ageDistribution || data.data.ageDistribution.length === 0) {
+    return <p>표시할 데이터가 없습니다. 설문조사 데이터를 추가해주세요.</p>;
+  }
+
+  const chartData = {
+  labels: data.data.ageDistribution.map(item => item.range),
+  datasets: [
+    {
+      label: t('statsPage.age_distribution_title'),
+      data: data.data.ageDistribution.map(item => item.count),
+      backgroundColor: [
+        'rgba(255, 99, 132, 0.5)',
+        'rgba(54, 162, 235, 0.5)',
+        'rgba(255, 206, 86, 0.5)',
+        'rgba(75, 192, 192, 0.5)',
+      ],
+      borderColor: [
+        'rgba(255, 99, 132, 1)',
+        'rgba(54, 162, 235, 1)',
+        'rgba(255, 206, 86, 1)',
+        'rgba(75, 192, 192, 1)',
+      ],
+      borderWidth: 1,
+    },
+  ],
+};
+
+  const options = {
+    responsive: true,
+    plugins: {
+      legend: { position: 'top' },
+      title: { display: true, text: t('statsPage.age_chart_title') },
+    },
+  };
+
+  return (
+    <div>
+      <PageHeader
+        icon="📈"
+        title={t('statsPage.title')}
+        subtitle={t('statsPage.subtitle')}
+      />
+      <Container>
+        <h3>{t('statsPage.age_distribution_heading')}</h3>
+        <p>{t('statsPage.total_surveys', { count: data.data.totalSurveys })}</p>
+        <Bar data={chartData} options={options} />
+      </Container>
+    </div>
+  );
+};
+
+export default StatsPage;
+```
+
+1-6-5. src/pages/VisualizationPage.jsx
 ```jsx
 /* src/pages/VisualizationPage.jsx */
 import React from 'react';
@@ -1765,6 +1902,14 @@ export default VisualizationPage;
     "title": "404 - Page Not Found",
     "message": "The requested page does not exist.",
     "button": "Return to Home"
+  },
+  "statsPage": {
+    "title": "Survey statistics",
+    "subtitle": "Analyze and visualize survey data.",
+    "age_distribution_heading": "Age Distribution of Survey Participants",
+    "total_surveys": "Total Participants: {{count}}",
+    "age_distribution_title": "Number of Participants",
+    "age_chart_title": "Age Distribution"
   }
 }
 ```
@@ -1806,6 +1951,14 @@ export default VisualizationPage;
     "title": "404 - 페이지를 찾을 수 없습니다",
     "message": "요청하신 페이지가 존재하지 않습니다.",
     "button": "홈으로 돌아가기"
+  },
+  "statsPage": {
+    "title": "설문 통계",
+    "subtitle": "설문 데이터를 분석하여 시각화합니다.",
+    "age_distribution_heading": "연령대별 설문 참여자 분포",
+    "total_surveys": "총 설문 참여자: {{count}}명",
+    "age_distribution_title": "설문 참여자 수",
+    "age_chart_title": "연령대별 분포"
   }
 }
 ```
@@ -1979,7 +2132,10 @@ exports.getSurveys = asyncHandler(async (req, res) => {
   const result = await service.getAllSurveys(page, limit);
   res.json({ data: result });
 });
-exports.getStats = asyncHandler(async (req, res) => { /* ... */ });
+exports.getStats = asyncHandler(async (req, res) => {
+  const stats = await service.getSurveyStats();
+  res.json({ data: stats });
+});
 exports.updateSurvey = asyncHandler(async (req, res) => { /* ... */ });
 exports.deleteSurvey = asyncHandler(async (req, res) => {
    const { id } = req.params;

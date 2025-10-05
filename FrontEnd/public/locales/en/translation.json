@@ -33,5 +33,25 @@
     "title": "404 - Page Not Found",
     "message": "The requested page does not exist.",
     "button": "Return to Home"
+  },
+  "statsPage": {
+    "title": "Survey statistics",
+    "subtitle": "Analyze and visualize survey data.",
+    "nodata":"There is no data to display.",
+    "daily-hourly_heading":"Number of survey submissions by date/time zone",
+    "age_distribution_heading": "Survey Participant Distribution by Age Group",
+    "total_surveys": "Total Survey Participants: {{count}}",
+    "age_distribution_title": "Responses",
+    "age_chart_title": "Distribution by Age Group",
+    "daily_count_heading": "Survey Submissions by Date",
+    "daily_count_title": "Responses",
+    "hourly_count_heading": "Survey Submissions by Hour",
+    "hourly_count_title": "Responses",
+    "q1_heading": "Question 1 Response Rate",
+    "q1_title": "Responses",
+    "q2_heading": "Question 2 Response Rate",
+    "q2_title": "Responses",
+    "q3_heading": "Question 3 Response Rate",
+    "q3_title": "Number of responses"
   }
 }

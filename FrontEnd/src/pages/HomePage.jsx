@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import GradientIcon from '../components/GradientIcon';
 import PageHeader from '../components/PageHeader';
 
-const HomeContainer = styled.div`
+const PageContainer = styled.div`
   text-align: center;
   padding: 3rem 1rem;
 `;
@@ -42,7 +42,7 @@ function HomePage() {
     const { t } = useTranslation();
 
     return (
-        <HomeContainer>
+        <PageContainer>
         {}
         <PageHeader 
             icon="😂"
@@ -62,7 +62,7 @@ function HomePage() {
             <p>{t('home.card_viz_desc')}</p>
             </Card>
         </CardGrid>
-        </HomeContainer>
+        </PageContainer>
     );
 }
 

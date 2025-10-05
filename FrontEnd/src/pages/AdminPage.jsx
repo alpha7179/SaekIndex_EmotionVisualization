@@ -6,6 +6,7 @@ import { surveyAPI } from '../services/api';
 import { toast } from 'react-toastify';
 import PageHeader from '../components/PageHeader';
 import SurveyEditForm from '../components/SurveyEditForm';
+import { Link } from 'react-router-dom';
 
 const Container = styled.div` 
   padding: 2rem; 
@@ -21,6 +22,22 @@ const Danger = styled(Button)` color: #ff4757; border-color: #ffb3ba; `;
 const AnswerList = styled.ul` list-style: none; padding: 0; margin: 0; font-size: 0.85rem; li { margin-bottom: 0.25rem; } strong { margin-right: 0.5rem; }`;
 const PaginationContainer = styled.div` display: flex; justify-content: center; align-items: center; margin-top: 1rem; gap: 0.5rem; `;
 const PageButton = styled.button` padding: 0.5rem 0.8rem; border: 1px solid ${props => (props.isActive ? '#667eea' : '#ddd')}; background: ${props => (props.isActive ? '#667eea' : 'white')}; color: ${props => (props.isActive ? 'white' : '#333')}; border-radius: 6px; cursor: pointer; &:disabled { cursor: not-allowed; opacity: 0.5; } `;
+
+const TopActions = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1.5rem;
+`;
+const StatsButton = styled(Link)`
+  padding: 0.5rem 1rem;
+  background: #667eea;
+  color: white;
+  border-radius: 6px;
+  font-weight: 600;
+  &:hover {
+    background: #5a67d8;
+  }
+`;
 
 function AdminPage() {
   const queryClient = useQueryClient();
@@ -70,6 +87,11 @@ function AdminPage() {
         title="설문 데이터 통합 관리"
         subtitle="사용자가 제출한 모든 설문 데이터를 관리합니다."
       />
+
+      <TopActions>
+        <StatsButton to="/admin/stats">통계 시각화 보기</StatsButton>
+      </TopActions>
+
       <Grid>
         <Panel>
           <Table>

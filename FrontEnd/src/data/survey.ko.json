@@ -25,11 +25,11 @@
     "label": "문항1",
     "type": "checkbox",
     "options": [
-      { "value": "5", "label": "값1" },
-      { "value": "4", "label": "값2" },
+      { "value": "1", "label": "값1" },
+      { "value": "2", "label": "값2" },
       { "value": "3", "label": "값3" },
-      { "value": "2", "label": "값4" },
-      { "value": "1", "label": "값5" }
+      { "value": "4", "label": "값4" },
+      { "value": "5", "label": "값5" }
     ],
     "validation": { "required": "필수 응답 문항입니다." }
   },
@@ -38,11 +38,11 @@
     "label": "문항2",
     "type": "radio",
     "options": [
-      { "value": "5", "label": "값1" },
-      { "value": "4", "label": "값2" },
+      { "value": "1", "label": "값1" },
+      { "value": "2", "label": "값2" },
       { "value": "3", "label": "값3" },
-      { "value": "2", "label": "값4" },
-      { "value": "1", "label": "값5" }
+      { "value": "4", "label": "값4" },
+      { "value": "5", "label": "값5" }
     ],
     "validation": { "required": "필수 응답 문항입니다." }
   },
@@ -55,7 +55,8 @@
       { "value": "1", "label": "값1" },
       { "value": "2", "label": "값2" },
       { "value": "3", "label": "값3" },
-      { "value": "4", "label": "값4" }
+      { "value": "4", "label": "값4" },
+      { "value": "5", "label": "값5" }
     ],
     "validation": { "required": "필수 응답 문항입니다." }
   },

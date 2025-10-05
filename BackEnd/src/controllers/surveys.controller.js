@@ -14,7 +14,10 @@ exports.getSurveys = asyncHandler(async (req, res) => {
   const result = await service.getAllSurveys(page, limit);
   res.json({ data: result });
 });
-exports.getStats = asyncHandler(async (req, res) => { /* ... */ });
+exports.getStats = asyncHandler(async (req, res) => {
+  const stats = await service.getSurveyStats();
+  res.json({ data: stats });
+});
 exports.updateSurvey = asyncHandler(async (req, res) => { /* ... */ });
 exports.deleteSurvey = asyncHandler(async (req, res) => {
    const { id } = req.params;
